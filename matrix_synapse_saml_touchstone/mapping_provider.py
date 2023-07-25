@@ -38,11 +38,10 @@ logger = logging.getLogger(__name__)
 MAPPING_SESSION_VALIDITY_PERIOD_MS = 15 * 60 * 1000
 
 # names of attributes in the `ava` property we get from pysaml2
-UID_ATTRIBUTE_NAME = (
-    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-)
+UID_ATTRIBUTE_NAME = "uid"
 EMAIL_ATTRIBUTE_NAME = "email"
 DISPLAYNAME_ATTRIBUTE_NAME = "displayName"
+AFFILIATION_ATTRIBUTE_NAME = "affiliation"
 
 
 @attr.s
@@ -68,24 +67,8 @@ class SamlMappingProvider(object):
         self, saml_response: saml2.response.AuthnResponse, client_redirect_url: str
     ):
         """Extracts the remote user id from the SAML response"""
-        logger.warning(f"{saml_response=}")
-        logger.warning(f"{saml_response.ava=}")
-        if self._config.use_name_id_for_remote_uid:
-            name_id = saml_response.name_id
-            if not name_id:
-                logger.warning("SAML2 response lacks a NameID field")
-                raise CodeMessageException(400, "'NameID' not in SAML2 response")
-            return name_id.text
-        else:
-            try:
                 return saml_response.ava[UID_ATTRIBUTE_NAME][0]
-            except KeyError:
-                logger.warning(
-                    "SAML2 response lacks a '%s' attribute", UID_ATTRIBUTE_NAME
-                )
-                raise CodeMessageException(
-                    400, "'%s' not in SAML2 response" % (UID_ATTRIBUTE_NAME,)
-                )
+    
 
     def saml_response_to_user_attributes(
         self,
