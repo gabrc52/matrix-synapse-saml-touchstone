@@ -33,6 +33,10 @@ from matrix_synapse_saml_touchstone._sessions import (
     displayname_mapping_sessions,
 )
 
+# maximum number of times to try to register if a username is not available
+# (adding a number sequentially to disambiguate)
+MAX_FAILURES = 5
+
 """
 This file implements the "display name picker" resource, which is mapped as an
 additional_resource into the synapse resource tree.
@@ -132,7 +136,7 @@ class SubmitResource(AsyncResource):
         self._module_api = module_api
 
     @_wrap_for_html_exceptions
-    async def async_render_POST(self, request: Request):
+    async def async_render_POST(self, request: Request, num_failures: int = 0):
         session_id = request.getCookie(SESSION_COOKIE_NAME)
         if not session_id:
             _return_html_error(400, "missing session_id", request)
@@ -157,14 +161,18 @@ class SubmitResource(AsyncResource):
             _return_html_error(400, "missing display name", request)
             return
 
-        # We don't care about usernames right now.
+        # We don't need people choosing their own usernames right now.
         # if b"username" not in request.args:
         #     _return_html_error(400, "missing username", request)
         #     return
+        # localpart = request.args[b"username"][0].decode("utf-8", errors="replace")
         
         # People can have their kerb as their username
         localpart = session.email.split('@')[0]
-        # localpart = request.args[b"username"][0].decode("utf-8", errors="replace")
+
+        # Add a number if the username is already taken
+        if num_failures > 0:
+            localpart = f'{localpart}{num_failures}'
 
         # Get user's desired display name
         displayname = request.args[b"displayname"][0].decode("utf-8", errors="replace")
@@ -175,6 +183,8 @@ class SubmitResource(AsyncResource):
                 localpart=localpart, displayname=displayname
             )
         except SynapseError as e:
+            if num_failures < MAX_FAILURES:
+                return await self.async_render_POST(request, num_failures + 1)
             logger.warning("Error during registration: %s", e)
             _return_html_error(e.code, e.msg, request)
             return
