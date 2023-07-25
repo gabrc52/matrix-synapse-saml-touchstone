@@ -85,9 +85,9 @@ HTML_ERROR_TEMPLATE = """<!DOCTYPE html>
 
 
 def _wrap_for_html_exceptions(f):
-    async def wrapped(self, request):
+    async def wrapped(self, request, *args):
         try:
-            return await f(self, request)
+            return await f(self, request, *args)
         except Exception:
             logger.exception("Error handling request %s" % (request,))
             _return_html_error(500, "Internal server error", request)
@@ -96,9 +96,9 @@ def _wrap_for_html_exceptions(f):
 
 
 def _wrap_for_text_exceptions(f):
-    async def wrapped(self, request):
+    async def wrapped(self, request, *args):
         try:
-            return await f(self, request)
+            return await f(self, request, *args)
         except Exception:
             logger.exception("Error handling request %s" % (request,))
             body = b"Internal server error"
@@ -184,6 +184,29 @@ class SubmitResource(AsyncResource):
             )
         except SynapseError as e:
             if num_failures < MAX_FAILURES:
+                """
+                TODO: error
+
+Traceback (most recent call last):
+  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/matrix_synapse_saml_touchstone/displayname_picker.py", line 182, in async_render_POST
+    registered_user_id = await self._module_api.register_user(
+  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/twisted/internet/defer.py", line 1697, in _inlineCallbacks
+    result = context.run(gen.send, result)
+  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/synapse/handlers/register.py", line 291, in register_user
+    await self.check_username(localpart, guest_access_token=guest_access_token)
+  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/synapse/handlers/register.py", line 190, in check_username
+    raise SynapseError(
+synapse.api.errors.SynapseError: 400: User ID already taken.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/matrix_synapse_saml_touchstone/displayname_picker.py", line 90, in wrapped
+    return await f(self, request)
+  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/matrix_synapse_saml_touchstone/displayname_picker.py", line 187, in async_render_POST
+    return await self.async_render_POST(request, num_failures + 1)
+TypeError: _wrap_for_html_exceptions.<locals>.wrapped() takes 2 positional arguments but 3 were given
+                """
                 return await self.async_render_POST(request, num_failures + 1)
             logger.warning("Error during registration: %s", e)
             _return_html_error(e.code, e.msg, request)
