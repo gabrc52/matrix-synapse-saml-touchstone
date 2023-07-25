@@ -35,7 +35,7 @@ from matrix_synapse_saml_touchstone._sessions import (
 
 # maximum number of times to try to register if a username is not available
 # (adding a number sequentially to disambiguate)
-MAX_FAILURES = 5
+MAX_FAILURES = 9
 
 """
 This file implements the "display name picker" resource, which is mapped as an
@@ -47,7 +47,7 @@ The top-level resource is just a File resource which serves up the static files 
    * "submit", which does the mechanics of registering the new user, and redirects the
      browser back to the client URL
 
-   * "check" (TODO): checks if a userid is free.
+   * "check": checks if a userid is free.
 """
 
 logger = logging.getLogger(__name__)
@@ -184,29 +184,6 @@ class SubmitResource(AsyncResource):
             )
         except SynapseError as e:
             if num_failures < MAX_FAILURES:
-                """
-                TODO: error
-
-Traceback (most recent call last):
-  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/matrix_synapse_saml_touchstone/displayname_picker.py", line 182, in async_render_POST
-    registered_user_id = await self._module_api.register_user(
-  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/twisted/internet/defer.py", line 1697, in _inlineCallbacks
-    result = context.run(gen.send, result)
-  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/synapse/handlers/register.py", line 291, in register_user
-    await self.check_username(localpart, guest_access_token=guest_access_token)
-  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/synapse/handlers/register.py", line 190, in check_username
-    raise SynapseError(
-synapse.api.errors.SynapseError: 400: User ID already taken.
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/matrix_synapse_saml_touchstone/displayname_picker.py", line 90, in wrapped
-    return await f(self, request)
-  File "/opt/venvs/matrix-synapse/lib/python3.10/site-packages/matrix_synapse_saml_touchstone/displayname_picker.py", line 187, in async_render_POST
-    return await self.async_render_POST(request, num_failures + 1)
-TypeError: _wrap_for_html_exceptions.<locals>.wrapped() takes 2 positional arguments but 3 were given
-                """
                 return await self.async_render_POST(request, num_failures + 1)
             logger.warning("Error during registration: %s", e)
             _return_html_error(e.code, e.msg, request)
