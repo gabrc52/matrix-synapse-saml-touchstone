@@ -89,9 +89,11 @@ class SamlMappingProvider(object):
             dict: A dict containing new user attributes. Possible keys:
                 * mxid_localpart (str): Required. The localpart of the user's mxid
                 * displayname (str): The displayname of the user
+                * emails (list[str]): The emails of the user
         """
         remote_user_id = self.get_remote_user_id(saml_response, client_redirect_url)
         displayname = saml_response.ava.get(DISPLAYNAME_ATTRIBUTE_NAME, [None])[0]
+        email = saml_response.ava.get(EMAIL_ATTRIBUTE_NAME)[0]
 
         expire_old_sessions()
 
@@ -104,6 +106,7 @@ class SamlMappingProvider(object):
         session = DisplayNameMappingSession(
             remote_user_id=remote_user_id,
             displayname=displayname,
+            email=email,
             client_redirect_url=client_redirect_url,
             expiry_time_ms=now + MAPPING_SESSION_VALIDITY_PERIOD_MS,
         )

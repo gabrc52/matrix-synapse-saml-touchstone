@@ -151,14 +151,28 @@ class SubmitResource(AsyncResource):
         # this means there's theoretically a race where a single user can register
         # two accounts. I'm going to assume that's not a dealbreaker.
 
-        if b"username" not in request.args:
-            _return_html_error(400, "missing username", request)
+        # TODO: uhhhhh yeah I don't like that. but ok.
+
+        if b"displayname" not in request.args:
+            _return_html_error(400, "missing display name", request)
             return
-        localpart = request.args[b"username"][0].decode("utf-8", errors="replace")
+
+        # We don't care about usernames right now.
+        # if b"username" not in request.args:
+        #     _return_html_error(400, "missing username", request)
+        #     return
+        
+        # People can have their kerb as their username
+        localpart = session.email.split('@')[0]
+        # localpart = request.args[b"username"][0].decode("utf-8", errors="replace")
+
+        # Get user's desired display name
+        displayname = request.args[b"displayname"][0].decode("utf-8", errors="replace")
+
         logger.info("Registering username %s", localpart)
         try:
             registered_user_id = await self._module_api.register_user(
-                localpart=localpart, displayname=localpart
+                localpart=localpart, displayname=displayname
             )
         except SynapseError as e:
             logger.warning("Error during registration: %s", e)

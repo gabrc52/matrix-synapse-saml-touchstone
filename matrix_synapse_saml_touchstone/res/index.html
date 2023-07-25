@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Synapse Login</title>
+    <title>SIPB Matrix</title>
     <link rel="stylesheet" href="style.css" type="text/css" />
   </head>
   <body>
     <div class="card">
       <form method="post" class="form__input" id="form" action="submit">
-        <input type="text" name="username" id="field-username" autofocus="">
-        <label for="field-username">
-          <span><span aria-hidden="true">Please pick your </span>username</span>
+        <input type="text" name="displayname" id="field-displayname" autofocus="" required="">
+        <label for="field-displayname">
+          <span><span aria-hidden="true">Please pick your </span>display name</span>
         </label>
         <input type="button" class="button button--full-width" id="button-submit" value="Submit">
       </form>

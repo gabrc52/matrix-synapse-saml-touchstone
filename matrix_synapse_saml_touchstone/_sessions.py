@@ -33,6 +33,9 @@ class DisplayNameMappingSession:
     # displayname, per the SAML attributes
     displayname = attr.ib(type=Optional[str])
 
+    # email, per the SAML attributes
+    email = attr.ib(type=str)
+
     # where to redirect the client back to
     client_redirect_url = attr.ib(type=str)
 

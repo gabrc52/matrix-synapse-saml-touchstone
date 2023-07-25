@@ -1,4 +1,4 @@
-let inputField = document.getElementById("field-username");
+let inputField = document.getElementById("field-displayname");
 let inputForm = document.getElementById("form");
 let submitButton = document.getElementById("button-submit");
 let message = document.getElementById("message");
@@ -54,6 +54,9 @@ let buildQueryString = function(params) {
         .join('&');
 }
 
+// The username functions are not currently used unless we do want to
+// let people change their username
+
 let submitUsername = function(username) {
   if(username.length == 0) {
     onResponse("Please enter a username.", false);
@@ -87,6 +90,14 @@ let submitUsername = function(username) {
     });
 }
 
+let submitDisplayName = function(displayName) {
+  if (!displayName) {
+    onResponse("Please select a display name. You can always change it later.", false);
+    return;
+  }
+  onResponse("Success. Please wait a moment for your browser to redirect.", true);
+}
+
 let clickSubmit = function() {
   if(submitButton.classList.contains('button--disabled')) { return; }
 
@@ -94,8 +105,8 @@ let clickSubmit = function() {
   submitButton.classList.add('button--disabled');
 
   // Submit username
-  submitButton.value = "Checking...";
-  submitUsername(inputField.value);
+  submitButton.value = "Loading...";
+  submitDisplayName(inputField.value);
 };
 
 submitButton.onclick = clickSubmit;
