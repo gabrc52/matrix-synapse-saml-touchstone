@@ -249,6 +249,7 @@ def _add_login_token_to_redirect_url(url, token):
 
 def _return_html_error(code: int, msg: str, request: Request):
     """Sends an HTML error page"""
+    msg += " Please email matrix@mit.edu for help."
     body = HTML_ERROR_TEMPLATE.format(code=code, msg=html.escape(msg)).encode("utf-8")
     request.setResponseCode(code)
     request.setHeader(b"Content-Type", b"text/html; charset=utf-8")
