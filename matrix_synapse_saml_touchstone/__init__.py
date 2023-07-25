@@ -15,8 +15,8 @@
 
 from pkg_resources import DistributionNotFound, get_distribution
 
-from matrix_synapse_saml_mozilla.mapping_provider import SamlMappingProvider
-from matrix_synapse_saml_mozilla.username_picker import pick_username_resource
+from matrix_synapse_saml_touchstone.mapping_provider import SamlMappingProvider
+from matrix_synapse_saml_touchstone.username_picker import pick_username_resource
 
 try:
     __version__ = get_distribution(__name__).version

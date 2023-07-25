@@ -27,7 +27,7 @@ import synapse.module_api
 from synapse.module_api import run_in_background
 from synapse.module_api.errors import SynapseError
 
-from matrix_synapse_saml_mozilla._sessions import (
+from matrix_synapse_saml_touchstone._sessions import (
     SESSION_COOKIE_NAME,
     get_mapping_session,
     username_mapping_sessions,
@@ -53,7 +53,7 @@ def pick_username_resource(
     parsed_config, module_api: synapse.module_api.ModuleApi
 ) -> Resource:
     """Factory method to generate the top-level username picker resource"""
-    base_path = pkg_resources.resource_filename("matrix_synapse_saml_mozilla", "res")
+    base_path = pkg_resources.resource_filename("matrix_synapse_saml_touchstone", "res")
     res = File(base_path)
     res.putChild(b"submit", SubmitResource(module_api))
     res.putChild(b"check", AvailabilityCheckResource(module_api))

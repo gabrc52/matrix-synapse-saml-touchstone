@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from matrix_synapse_saml_mozilla import SamlMappingProvider
+from matrix_synapse_saml_touchstone import SamlMappingProvider
 
 logging.basicConfig()
 

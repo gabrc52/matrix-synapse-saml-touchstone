@@ -24,8 +24,8 @@ from saml2.sigver import CryptoBackend, SecurityContext
 
 from synapse.api.errors import CodeMessageException, RedirectException
 
-from matrix_synapse_saml_mozilla._sessions import username_mapping_sessions
-from matrix_synapse_saml_mozilla.mapping_provider import SamlConfig, SamlMappingProvider
+from matrix_synapse_saml_touchstone._sessions import username_mapping_sessions
+from matrix_synapse_saml_touchstone.mapping_provider import SamlConfig, SamlMappingProvider
 
 from . import create_mapping_provider
 

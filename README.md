@@ -1,14 +1,12 @@
-# Synapse Mozilla SAML MXID Mapper
+# Synapse Touchstone SAML MXID Mapper
 
-A Synapse plugin module which allows users to choose their username when they
+A Synapse plugin module which allows users to choose their display name when they
 first log in.
 
 ## Installation
 
-This plugin can be installed via [PyPi](https://pypi.org):
-
 ```
-pip install matrix-synapse-saml-mozilla
+pip install .
 ```
 
 ### Config
@@ -18,7 +16,7 @@ Add the following in your Synapse config:
 ```yaml
    saml2_config:
      user_mapping_provider:
-       module: "matrix_synapse_saml_mozilla.SamlMappingProvider"
+       module: "matrix_synapse_saml_touchstone.SamlMappingProvider"
 ```
 
 Also, under the HTTP client `listener`, configure an `additional_resource` as per
@@ -34,7 +32,7 @@ listeners:
 
     additional_resources:
       "/_matrix/saml2/pick_username":
-        module: "matrix_synapse_saml_mozilla.pick_username_resource"
+        module: "matrix_synapse_saml_touchstone.pick_username_resource"
 ```
 
 ### Configuration Options

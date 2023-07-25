@@ -40,8 +40,8 @@ def exec_file(path_segments, name):
 
 
 setup(
-    name="matrix-synapse-saml-mozilla",
-    packages=["matrix_synapse_saml_mozilla"],
+    name="matrix-synapse-saml-touchstone",
+    packages=["matrix_synapse_saml_touchstone"],
     include_package_data=True,
     description="An Mozilla-flavoured SAML MXID mapper for Synapse",
     use_scm_version=True,
