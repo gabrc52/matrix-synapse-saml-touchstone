@@ -24,7 +24,7 @@ from saml2.sigver import CryptoBackend, SecurityContext
 
 from synapse.api.errors import CodeMessageException, RedirectException
 
-from matrix_synapse_saml_touchstone._sessions import username_mapping_sessions
+from matrix_synapse_saml_touchstone._sessions import displayname_mapping_sessions
 from matrix_synapse_saml_touchstone.mapping_provider import SamlConfig, SamlMappingProvider
 
 from . import create_mapping_provider
@@ -75,27 +75,27 @@ class SamlUserAttributeTestCase(unittest.TestCase):
 
     def test_redirect(self):
         """Creates a dummy response, feeds it to the provider and checks that it
-        redirects to the username picker.
+        redirects to the display name picker.
         """
         provider = create_mapping_provider({"use_name_id_for_remote_uid": False})
         response = FakeResponse(123435, "Jonny")
 
-        # we expect this to redirect to the username picker
+        # we expect this to redirect to the display name picker
         with self.assertRaises(RedirectException) as cm:
             provider.saml_response_to_user_attributes(response, 0, "http://client/")
-        self.assertEqual(cm.exception.location, b"/_matrix/saml2/pick_username/")
+        self.assertEqual(cm.exception.location, b"/_matrix/saml2/pick_displayname/")
 
         cookieheader = cm.exception.cookies[0]
-        regex = re.compile(b"^username_mapping_session=([a-zA-Z]+);")
+        regex = re.compile(b"^displayname_mapping_session=([a-zA-Z]+);")
         m = regex.search(cookieheader)
         if not m:
             self.fail("cookie header %s does not match %s" % (cookieheader, regex))
 
         session_id = m.group(1).decode("ascii")
         self.assertIn(
-            session_id, username_mapping_sessions, "session id not found in map"
+            session_id, displayname_mapping_sessions, "session id not found in map"
         )
-        session = username_mapping_sessions[session_id]
+        session = displayname_mapping_sessions[session_id]
         self.assertEqual(session.remote_user_id, 123435)
         self.assertEqual(session.displayname, "Jonny")
         self.assertEqual(session.client_redirect_url, "http://client/")

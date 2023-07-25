@@ -27,9 +27,9 @@ from synapse.module_api.errors import RedirectException
 
 from matrix_synapse_saml_touchstone._sessions import (
     SESSION_COOKIE_NAME,
-    UsernameMappingSession,
+    DisplayNameMappingSession,
     expire_old_sessions,
-    username_mapping_sessions,
+    displayname_mapping_sessions,
 )
 
 logger = logging.getLogger(__name__)
@@ -145,18 +145,18 @@ class SamlMappingProvider(object):
         )
 
         now = int(time.time() * 1000)
-        session = UsernameMappingSession(
+        session = DisplayNameMappingSession(
             remote_user_id=remote_user_id,
             displayname=displayname,
             client_redirect_url=client_redirect_url,
             expiry_time_ms=now + MAPPING_SESSION_VALIDITY_PERIOD_MS,
         )
 
-        username_mapping_sessions[session_id] = session
+        displayname_mapping_sessions[session_id] = session
         logger.info("Recorded registration session id %s", session_id)
 
-        # Redirect to the username picker
-        e = RedirectException(b"/_matrix/saml2/pick_username/")
+        # Redirect to the display name picker
+        e = RedirectException(b"/_matrix/saml2/pick_displayname/")
         e.cookies.append(
             b"%s=%s; path=/" % (SESSION_COOKIE_NAME, session_id.encode("ascii"),)
         )

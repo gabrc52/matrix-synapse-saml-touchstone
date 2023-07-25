@@ -18,13 +18,13 @@ from typing import Optional
 
 import attr
 
-SESSION_COOKIE_NAME = b"username_mapping_session"
+SESSION_COOKIE_NAME = b"displaynamename_mapping_session"
 
 logger = logging.getLogger(__name__)
 
 
 @attr.s
-class UsernameMappingSession:
+class DisplayNameMappingSession:
     """Data we track about SAML2 sessions"""
 
     # user ID on the SAML server
@@ -41,7 +41,7 @@ class UsernameMappingSession:
 
 
 # a map from session id to session data
-username_mapping_sessions = {}  # type: dict[str, UsernameMappingSession]
+displayname_mapping_sessions = {}  # type: dict[str, DisplayNameMappingSession]
 
 
 def expire_old_sessions(gettime=time.time):
@@ -49,16 +49,16 @@ def expire_old_sessions(gettime=time.time):
     to_expire = []
     now = int(gettime() * 1000)
 
-    for session_id, session in username_mapping_sessions.items():
+    for session_id, session in displayname_mapping_sessions.items():
         if session.expiry_time_ms <= now:
             to_expire.append(session_id)
 
     for session_id in to_expire:
         logger.info("Expiring mapping session %s", session_id)
-        del username_mapping_sessions[session_id]
+        del displayname_mapping_sessions[session_id]
 
 
-def get_mapping_session(session_id: str) -> Optional[UsernameMappingSession]:
+def get_mapping_session(session_id: str) -> Optional[DisplayNameMappingSession]:
     """Look up the given session id, first expiring any old sessions"""
     expire_old_sessions()
-    return username_mapping_sessions.get(session_id, None)
+    return displayname_mapping_sessions.get(session_id, None)

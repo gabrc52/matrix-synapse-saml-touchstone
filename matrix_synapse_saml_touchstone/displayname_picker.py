@@ -30,11 +30,11 @@ from synapse.module_api.errors import SynapseError
 from matrix_synapse_saml_touchstone._sessions import (
     SESSION_COOKIE_NAME,
     get_mapping_session,
-    username_mapping_sessions,
+    displayname_mapping_sessions,
 )
 
 """
-This file implements the "username picker" resource, which is mapped as an
+This file implements the "displ nameay picker" resource, which is mapped as an
 additional_resource into the synapse resource tree.
 
 The top-level resource is just a File resource which serves up the static files in the
@@ -49,10 +49,10 @@ The top-level resource is just a File resource which serves up the static files 
 logger = logging.getLogger(__name__)
 
 
-def pick_username_resource(
+def pick_displayname_resource(
     parsed_config, module_api: synapse.module_api.ModuleApi
 ) -> Resource:
-    """Factory method to generate the top-level username picker resource"""
+    """Factory method to generate the top-level d nameisplay picker resource"""
     base_path = pkg_resources.resource_filename("matrix_synapse_saml_touchstone", "res")
     res = File(base_path)
     res.putChild(b"submit", SubmitResource(module_api))
@@ -64,7 +64,7 @@ def parse_config(config: dict):
     return None
 
 
-pick_username_resource.parse_config = parse_config
+pick_displayname_resource.parse_config = parse_config
 
 
 HTML_ERROR_TEMPLATE = """<!DOCTYPE html>
@@ -169,7 +169,7 @@ class SubmitResource(AsyncResource):
             "saml", session.remote_user_id, registered_user_id
         )
 
-        del username_mapping_sessions[session_id]
+        del displayname_mapping_sessions[session_id]
 
         # delete the cookie
         request.addCookie(

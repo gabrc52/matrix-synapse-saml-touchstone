@@ -31,14 +31,16 @@ listeners:
       - names: [client]
 
     additional_resources:
-      "/_matrix/saml2/pick_username":
-        module: "matrix_synapse_saml_touchstone.pick_username_resource"
+      "/_matrix/saml2/pick_displayname":
+        module: "matrix_synapse_saml_touchstone.pick_displayname_resource"
 ```
 
 ### Configuration Options
 
 Synapse allows SAML mapping providers to specify custom configuration through the
 `saml2_config.user_mapping_provider.config` option.
+
+TODO: completely irrelevant for us - let us remove them
 
 Currently the following options are supported:
 
