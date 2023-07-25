@@ -55,7 +55,7 @@ class SamlMappingProvider(object):
     def __init__(
         self, parsed_config: SamlConfig, module_api: synapse.module_api.ModuleApi
     ):
-        """A Mozilla-flavoured, Synapse user mapping provider
+        """A Touchstone-flavoured, Synapse user mapping provider
 
         Args:
             parsed_config: A configuration object. The result of self.parse_config
@@ -63,12 +63,13 @@ class SamlMappingProvider(object):
         self._random = random.SystemRandom()
         self._config = parsed_config
 
-        logger.info("Domain block list: %s", self._config.domain_block_list)
 
     def get_remote_user_id(
         self, saml_response: saml2.response.AuthnResponse, client_redirect_url: str
     ):
         """Extracts the remote user id from the SAML response"""
+        logger.warning(f"{saml_response=}")
+        logger.warning(f"{saml_response.ava=}")
         if self._config.use_name_id_for_remote_uid:
             name_id = saml_response.name_id
             if not name_id:
