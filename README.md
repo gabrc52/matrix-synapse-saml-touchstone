@@ -40,23 +40,7 @@ listeners:
 Synapse allows SAML mapping providers to specify custom configuration through the
 `saml2_config.user_mapping_provider.config` option.
 
-TODO: completely irrelevant for us - let us remove them
-
-Currently the following options are supported:
-
- * `use_name_id_for_remote_uid`: if set to `False`, we will use the SAML
-   attribute mapped to `uid` to identify the remote user instead of the `NameID`
-   from the assertion. `True` by default.
-
- * `bad_domain_file`: should point a file containing a list of domains (one
-   per line); users who have an email address on any of these domains will be
-   blocked from registration.
-
- * `bad_domain_list`: an alternative to `bad_domain_file` allowing the list of
-   bad domains to be specified inline in the config.
-
-   If both `bad_domain_file` and `bad_domain_list` are specified, the two lists
-   are merged.
+There are no configuration options supported at the moment.
 
 ## Implementation notes
 
