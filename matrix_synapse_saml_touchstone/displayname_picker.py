@@ -34,7 +34,7 @@ from matrix_synapse_saml_touchstone._sessions import (
 )
 
 """
-This file implements the "displ nameay picker" resource, which is mapped as an
+This file implements the "display name picker" resource, which is mapped as an
 additional_resource into the synapse resource tree.
 
 The top-level resource is just a File resource which serves up the static files in the
@@ -43,7 +43,7 @@ The top-level resource is just a File resource which serves up the static files 
    * "submit", which does the mechanics of registering the new user, and redirects the
      browser back to the client URL
 
-    * "check" (TODO): checks if a userid is free.
+   * "check" (TODO): checks if a userid is free.
 """
 
 logger = logging.getLogger(__name__)
