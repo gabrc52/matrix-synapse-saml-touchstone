@@ -1,7 +1,8 @@
 # Synapse Touchstone SAML MXID Mapper
 
 A Synapse plugin module which allows users to choose their display name when they
-first log in.
+first log in. The username is hardcoded to the part of the email address before the @,
+with `1`, `2`, etc appended to disambiguate, if necessary.
 
 ## Installation
 
