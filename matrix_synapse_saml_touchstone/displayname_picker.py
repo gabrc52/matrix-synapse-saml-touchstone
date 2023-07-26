@@ -152,7 +152,7 @@ class FormResource(AsyncResource):
         request.setResponseCode(200)
         request.setHeader(b"Content-Type", b"text/html; charset=utf-8")
         request.setHeader(b"Content-Length", b"%i" % (len(body),))
-        request.write(body)
+        request.write(body.encode("utf-8"))
         try:
             request.finish()
         except RuntimeError as e:
