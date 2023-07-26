@@ -65,10 +65,10 @@ ul form {
 .button:hover {
     box-shadow: 0 0 5px;
 }
-#name {
+#displayname {
     border-radius: 4px;
     padding: 16px;
-    width: 200px;
+    width: 220px;
 }
 .error {
     color: orange;
