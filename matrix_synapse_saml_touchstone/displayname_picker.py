@@ -60,7 +60,6 @@ def pick_displayname_resource(
     base_path = pkg_resources.resource_filename("matrix_synapse_saml_touchstone", "res")
     res = File(base_path)
     res.putChild(b"submit", SubmitResource(module_api))
-    res.putChild(b"check", AvailabilityCheckResource(module_api))
     return res
 
 
@@ -208,45 +207,6 @@ class SubmitResource(AsyncResource):
             request,
             session.client_redirect_url,
         )
-
-
-class AvailabilityCheckResource(AsyncResource):
-    def __init__(self, module_api: synapse.module_api.ModuleApi):
-        super().__init__()
-        self._module_api = module_api
-
-    @_wrap_for_text_exceptions
-    async def async_render_GET(self, request: Request):
-        # make sure that there is a valid mapping session, to stop people dictionary-
-        # scanning for accounts
-        session_id = request.getCookie(SESSION_COOKIE_NAME)
-        if not session_id:
-            _return_json({"error": "missing session_id"}, request)
-            return
-
-        session_id = session_id.decode("ascii", errors="replace")
-        session = get_mapping_session(session_id)
-        if not session:
-            logger.info("Couldn't find session id %s", session_id)
-            _return_json({"error": "unknown session"}, request)
-            return
-
-        if b"username" not in request.args:
-            _return_json({"error": "missing username"}, request)
-            return
-        localpart = request.args[b"username"][0].decode("utf-8", errors="replace")
-        logger.info("Checking for availability of username %s", localpart)
-        try:
-            user_id = self._module_api.get_qualified_user_id(localpart)
-            registered_id = await self._module_api.check_user_exists(user_id)
-            available = registered_id is None
-        except Exception as e:
-            logger.warning(
-                "Error checking for availability of %s: %s %s" % (localpart, type(e), e)
-            )
-            available = False
-        response = {"available": available}
-        _return_json(response, request)
 
 
 def _add_login_token_to_redirect_url(url, token):
