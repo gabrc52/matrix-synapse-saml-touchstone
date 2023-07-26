@@ -12,11 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 import html
 import json
 import logging
 import urllib.parse
-from typing import Any
+from typing import Any, Optional
 
 import pkg_resources
 from twisted.web.resource import Resource
@@ -31,6 +32,7 @@ from matrix_synapse_saml_touchstone._sessions import (
     SESSION_COOKIE_NAME,
     get_mapping_session,
     displayname_mapping_sessions,
+    DisplayNameMappingSession,
 )
 
 # maximum number of times to try to register if a username is not available
@@ -56,10 +58,11 @@ logger = logging.getLogger(__name__)
 def pick_displayname_resource(
     parsed_config, module_api: synapse.module_api.ModuleApi
 ) -> Resource:
-    """Factory method to generate the top-level d nameisplay picker resource"""
+    """Factory method to generate the top-level display name picker resource"""
     base_path = pkg_resources.resource_filename("matrix_synapse_saml_touchstone", "res")
     res = File(base_path)
     res.putChild(b"submit", SubmitResource(module_api))
+    res.putChild(b"", FormResource(module_api, os.path.join(base_path, "index.html")))
     return res
 
 
@@ -129,6 +132,33 @@ class AsyncResource(Resource):
         return NOT_DONE_YET
 
 
+class FormResource(AsyncResource):
+    """
+    Simple resource that replies with index.html, replacing KERB_PLACEHOLDER with the user's
+    kerb and DISPLAYNAME_PLACEHOLDER with the user's display name.
+    """
+
+    def __init__(self, module_api: synapse.module_api.ModuleApi, base_path: str):
+        super().__init__()
+        self._module_api = module_api
+        with open(base_path, 'r') as f:
+            self.html = f.read()
+
+    @_wrap_for_html_exceptions
+    async def async_render_GET(self, request: Request):
+        _, session = _get_session(request)
+        kerb = session.email.split('@')[0]
+        body = self.html.format(kerb=kerb, displayname=session.displayname)
+        request.setResponseCode(200)
+        request.setHeader(b"Content-Type", b"text/html; charset=utf-8")
+        request.setHeader(b"Content-Length", b"%i" % (len(body),))
+        request.write(body)
+        try:
+            request.finish()
+        except RuntimeError as e:
+            logger.info("Connection disconnected before response was written: %r", e)
+
+
 class SubmitResource(AsyncResource):
     def __init__(self, module_api: synapse.module_api.ModuleApi):
         super().__init__()
@@ -136,17 +166,7 @@ class SubmitResource(AsyncResource):
 
     @_wrap_for_html_exceptions
     async def async_render_POST(self, request: Request, num_failures: int = 0):
-        session_id = request.getCookie(SESSION_COOKIE_NAME)
-        if not session_id:
-            _return_html_error(400, "missing session_id", request)
-            return
-
-        session_id = session_id.decode("ascii", errors="replace")
-        session = get_mapping_session(session_id)
-        if not session:
-            logger.info("Session ID %s not found", session_id)
-            _return_html_error(403, "Unknown session", request)
-            return
+        session_id, session = _get_session(request)
 
         # we don't clear the session from the dict until the ID is successfully
         # registered, so the user can go round and have another go if need be.
@@ -207,6 +227,22 @@ class SubmitResource(AsyncResource):
             request,
             session.client_redirect_url,
         )
+
+
+def _get_session(request: Request) -> tuple[str, DisplayNameMappingSession]:
+    session_id = request.getCookie(SESSION_COOKIE_NAME)
+    if not session_id:
+        _return_html_error(400, "missing session_id", request)
+        return
+
+    session_id = session_id.decode("ascii", errors="replace")
+    session = get_mapping_session(session_id)
+    if not session:
+        logger.info("Session ID %s not found", session_id)
+        _return_html_error(403, "Unknown session", request)
+        return
+
+    return session_id, session
 
 
 def _add_login_token_to_redirect_url(url, token):

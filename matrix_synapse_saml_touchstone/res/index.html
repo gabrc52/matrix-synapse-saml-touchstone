@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style2.css">
     <title>SIPB Matrix</title>
-    <link rel="stylesheet" href="style.css" type="text/css" />
-  </head>
-  <body>
-    <div class="card">
-      <form method="post" class="form__input" id="form" action="submit">
-        <input type="text" name="displayname" id="field-displayname" autofocus="" required="">
-        <label for="field-displayname">
-          <span><span aria-hidden="true">Please pick your </span>display name</span>
-        </label>
-        <input type="button" class="button button--full-width" id="button-submit" value="Submit">
-      </form>
-      <div role=alert class="tooltip hidden" id="message"></div>
-      <script src="script.js"></script>
+</head>
+<body>
+    <div id="main">
+        <h1>One more thing!</h1>
+        <h3><strong>How would you like to be shown to other people?</strong></h3>
+        <h5>Your name should have been sourced from WebSIS. Feel free to change it to anything else, real or not, and you can always change it later or set different display names for different chats.</h5>
+        <h5>Also note that your username will be set to your kerb ({kerb}). If you need to use a different username, or have any other questions, don't hesitate to reach out to matrix@mit.edu.</h5>
+        <form method="post">
+            <input type="text" id="displayname" placeholder="Enter display name here" required name="displayname" value="{displayname}">
+            <input class="button singlebutton" type="submit" id="btn_yes" value="Sign up">
+        </form>
     </div>
-  </body>
+</body>
 </html>
