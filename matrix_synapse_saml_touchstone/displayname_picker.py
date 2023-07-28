@@ -199,7 +199,7 @@ class SubmitResource(AsyncResource):
         logger.info("Registering username %s", localpart)
         try:
             registered_user_id = await self._module_api.register_user(
-                localpart=localpart, displayname=displayname
+                localpart=localpart, displayname=displayname, emails=[session.email],
             )
         except SynapseError as e:
             if num_failures < MAX_FAILURES:
