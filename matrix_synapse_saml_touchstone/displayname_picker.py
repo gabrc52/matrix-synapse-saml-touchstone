@@ -18,6 +18,7 @@ import json
 import logging
 import urllib.parse
 from typing import Any, Optional
+from uuid import uuid4
 
 import pkg_resources
 from twisted.web.resource import Resource
@@ -210,6 +211,16 @@ class SubmitResource(AsyncResource):
 
         await self._module_api.record_user_external_id(
             "saml", session.remote_user_id, registered_user_id
+        )
+
+        # in case we want to make student-only rooms
+        # HACK: we abuse synapse's SSO mapping table and the fact that it
+        # doesn't check that the sign-on method exists. This way, we don't need
+        # to create a database table just for this, and the admin endpoints/GUI
+        # can show someone's affiliation. We concatenate a UUID since these have to
+        # be unique. We can drop it when we need to access it from other modules
+        await self._module_api.record_user_external_id(
+            "affiliation", f"{session.affiliation}|{uuid4()}", registered_user_id
         )
 
         del displayname_mapping_sessions[session_id]

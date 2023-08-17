@@ -94,6 +94,7 @@ class SamlMappingProvider(object):
         remote_user_id = self.get_remote_user_id(saml_response, client_redirect_url)
         displayname = saml_response.ava.get(DISPLAYNAME_ATTRIBUTE_NAME, [None])[0]
         email = saml_response.ava.get(EMAIL_ATTRIBUTE_NAME)[0]
+        affiliation = saml_response.ava.get(AFFILIATION_ATTRIBUTE_NAME)[0]
 
         expire_old_sessions()
 
@@ -107,6 +108,7 @@ class SamlMappingProvider(object):
             remote_user_id=remote_user_id,
             displayname=displayname,
             email=email,
+            affiliation=affiliation,
             client_redirect_url=client_redirect_url,
             expiry_time_ms=now + MAPPING_SESSION_VALIDITY_PERIOD_MS,
         )
